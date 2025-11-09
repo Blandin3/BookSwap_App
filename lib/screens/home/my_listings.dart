@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/book_provider.dart';
 import '../../providers/swap_provider.dart';
 import '../../providers/notification_provider.dart';
@@ -345,55 +344,7 @@ class MyListings extends StatelessWidget {
     }
   }
 
-  void _showRatingDialog(BuildContext context, String userId) {
-    int rating = 5;
-    final commentController = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rate Swap Partner'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  onPressed: () => rating = index + 1,
-                  icon: Icon(
-                    Icons.star,
-                    color: index < rating ? Colors.amber : Colors.grey,
-                  ),
-                );
-              }),
-            ),
-            TextField(
-              controller: commentController,
-              decoration: const InputDecoration(
-                hintText: 'Optional comment...',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Skip'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Implement rating submission
-            },
-            child: const Text('Submit'),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Color _getSwapStatusColor(SwapStatus status) {
     switch (status) {

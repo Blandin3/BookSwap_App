@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart';
 
 class FirestoreService {
   FirestoreService._();
@@ -59,7 +58,7 @@ class FirestoreService {
       _db.collection('swaps').where('receiverId', isEqualTo: uid).snapshots();
 
   Future<String> createSwap({required String bookId, required String senderId, required String receiverId}) async {
-    print('Creating swap for book: $bookId');
+    debugPrint('Creating swap for book: $bookId');
     final ref = _db.collection('swaps').doc();
     await ref.set({
       'bookId': bookId,
@@ -68,12 +67,12 @@ class FirestoreService {
       'status': 'Pending',
       'createdAt': FieldValue.serverTimestamp(),
     });
-    print('Updating book status to Pending for book: $bookId');
+    debugPrint('Updating book status to Pending for book: $bookId');
     await _db.collection('books').doc(bookId).update({
       'status': 'Pending',
       'isAvailable': false, // Book becomes unavailable during swap process
     });
-    print('Book status updated successfully');
+    debugPrint('Book status updated successfully');
     return ref.id;
   }
 

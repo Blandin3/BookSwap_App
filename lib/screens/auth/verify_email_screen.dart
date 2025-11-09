@@ -95,7 +95,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       }
     } catch (e) {
       // Silent check - don't show errors
-      print('Silent verification check failed: $e');
+      debugPrint('Silent verification check failed: $e');
     }
   }
 

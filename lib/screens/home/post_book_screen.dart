@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:provider/provider.dart';
 import '../../providers/book_provider.dart';
 import '../../models/book.dart';
@@ -24,7 +21,6 @@ class _PostBookScreenState extends State<PostBookScreen> {
   final _swapFor = TextEditingController();
   String _condition = 'New';
   bool _loading = false;
-  bool _isUploading = false;
   XFile? _image;
 
   @override
@@ -76,7 +72,7 @@ class _PostBookScreenState extends State<PostBookScreen> {
             TextFormField(controller: _swapFor, decoration: const InputDecoration(labelText: 'Swap For')),
             const SizedBox(height: 12),
             DropdownButtonFormField(
-              value: _condition,
+              initialValue: _condition,
               decoration: const InputDecoration(labelText: 'Condition'),
               items: const [
                 DropdownMenuItem(value: 'New', child: Text('New')),

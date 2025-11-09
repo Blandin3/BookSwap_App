@@ -1,7 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/book.dart';
+import '../screens/chat/simple_chat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
@@ -144,14 +145,28 @@ class BookCard extends StatelessWidget {
                 ],
               )
             else if (onSwap != null)
-              ElevatedButton(
-                onPressed: book.isAvailable ? onSwap : null,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  backgroundColor: book.isAvailable ? const Color(0xFF42A5F5) : const Color(0xFF607D8B),
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(book.isAvailable ? 'Request Swap' : book.status),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: book.isAvailable ? onSwap : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      backgroundColor: book.isAvailable ? const Color(0xFF42A5F5) : const Color(0xFF607D8B),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(book.isAvailable ? 'Request Swap' : book.status),
+                  ),
+                  const SizedBox(height: 4),
+                  TextButton(
+                    onPressed: () => _openChat(context, book),
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF26A69A),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    ),
+                    child: const Text('Chat', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
               ),
           ],
         ),
@@ -189,6 +204,21 @@ class BookCard extends StatelessWidget {
         Icons.menu_book,
         size: 40,
         color: Color(0xFF42A5F5), // Sky Blue
+      ),
+    );
+  }
+
+  void _openChat(BuildContext context, Book book) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null || currentUser.uid == book.ownerId) return;
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SimpleChatScreen(
+          otherUserId: book.ownerId,
+          otherUserEmail: book.ownerEmail,
+        ),
       ),
     );
   }

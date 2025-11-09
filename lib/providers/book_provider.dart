@@ -46,7 +46,7 @@ class BookProvider with ChangeNotifier {
       _browse.sort((a, b) => b.id.compareTo(a.id));
       notifyListeners();
     }, onError: (e) {
-      print('Error loading books: $e');
+      debugPrint('Error loading books: $e');
     });
 
     _mineSub = _svc.booksByOwner(uid).listen((s) {
@@ -54,7 +54,7 @@ class BookProvider with ChangeNotifier {
       _mine.sort((a, b) => b.id.compareTo(a.id));
       notifyListeners();
     }, onError: (e) {
-      print('Error loading my books: $e');
+      debugPrint('Error loading my books: $e');
     });
   }
 
@@ -84,7 +84,7 @@ class BookProvider with ChangeNotifier {
         coverImageUrl = await _svc.uploadImageToStorage(image, user.uid);
       } catch (e) {
         // Continue without image if upload fails
-        print('Image upload failed: $e');
+        debugPrint('Image upload failed: $e');
       }
     }
     
@@ -118,7 +118,7 @@ class BookProvider with ChangeNotifier {
         coverImageUrl = await _svc.uploadImageToStorage(image, _auth.currentUser!.uid);
       } catch (e) {
         // Keep current image if new upload fails
-        print('Image upload failed: $e');
+        debugPrint('Image upload failed: $e');
       }
     }
     
@@ -138,10 +138,10 @@ class BookProvider with ChangeNotifier {
     final me = _auth.currentUser!;
     if (me.uid == book.ownerId) return;
     
-    print('Requesting swap for book: ${book.id}');
+    debugPrint('Requesting swap for book: ${book.id}');
     await _svc.createSwap(bookId: book.id, senderId: me.uid, receiverId: book.ownerId);
     await _svc.ensureThread(me.uid, book.ownerId);
-    print('Swap request completed');
+    debugPrint('Swap request completed');
   }
 
   Future<void> acceptSwap(String swapId, String bookId) async {

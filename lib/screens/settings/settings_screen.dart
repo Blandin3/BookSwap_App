@@ -74,7 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -88,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Push Notifications'),
                     subtitle: const Text('Get notified of new swap requests'),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    activeColor: const Color(0xFF42A5F5), // Sky Blue
+                    activeThumbColor: const Color(0xFF42A5F5), // Sky Blue
                   ),
                   Divider(height: 1, color: Colors.grey[200]),
                   SwitchListTile(
@@ -97,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Email Updates'),
                     subtitle: const Text('Receive swap updates via email'),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    activeColor: const Color(0xFF42A5F5), // Sky Blue
+                    activeThumbColor: const Color(0xFF42A5F5), // Sky Blue
                   ),
                 ],
               ),
@@ -123,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -207,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text('User Profile'),
           ],
         ),
-        content: Container(
+        content: SizedBox(
           width: double.maxFinite,
           child: Column(
             mainAxisSize: MainAxisSize.min,

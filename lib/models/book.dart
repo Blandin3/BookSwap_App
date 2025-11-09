@@ -6,7 +6,7 @@ class Book {
   final String author;
   final String condition;
   final String swapFor;
-  final String imageUrl;
+  final String imageBase64;
   final String ownerId;
   final String ownerEmail;
   final String status;
@@ -17,7 +17,7 @@ class Book {
     required this.author,
     required this.condition,
     required this.swapFor,
-    required this.imageUrl,
+    required this.imageBase64,
     required this.ownerId,
     required this.ownerEmail,
     required this.status,
@@ -31,7 +31,7 @@ class Book {
       author: d['author'] ?? '',
       condition: d['condition'] ?? 'New',
       swapFor: d['swapFor'] ?? '',
-      imageUrl: d['imageUrl'] ?? '',
+      imageBase64: d['imageBase64'] ?? '',
       ownerId: d['ownerId'] ?? '',
       ownerEmail: d['ownerEmail'] ?? '',
       status: d['status'] ?? '',

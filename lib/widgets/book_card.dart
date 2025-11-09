@@ -38,8 +38,8 @@ class BookCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: book.imageUrl.isNotEmpty
-                    ? _buildImage(book.imageUrl)
+                child: book.imageBase64.isNotEmpty
+                    ? _buildImage(book.imageBase64)
                     : Container(
                         width: 80,
                         height: 120,
@@ -141,24 +141,18 @@ class BookCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(String imageUrl) {
-    if (imageUrl.startsWith('data:image')) {
-      final base64String = imageUrl.split(',')[1];
-      final bytes = base64Decode(base64String);
+  Widget _buildImage(String imageBase64) {
+    try {
+      final bytes = base64Decode(imageBase64);
       return Image.memory(
         bytes,
         width: 80,
         height: 120,
         fit: BoxFit.cover,
       );
+    } catch (e) {
+      return _buildPlaceholder();
     }
-    return Image.network(
-      imageUrl,
-      width: 80,
-      height: 120,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-    );
   }
 
   Widget _buildPlaceholder() {

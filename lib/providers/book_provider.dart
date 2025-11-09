@@ -71,29 +71,17 @@ class BookProvider with ChangeNotifier {
     required String author,
     required String condition,
     required String swapFor,
-    XFile? image,
+    String? imageBase64,
   }) async {
     final user = _auth.currentUser;
     if (user == null) throw Exception('User not logged in');
     
-    String imageUrl = '';
-    
-    // Upload image first if provided
-    if (image != null) {
-      try {
-        imageUrl = await _svc.uploadImage(image, user.uid);
-      } catch (e) {
-        // Continue without image
-      }
-    }
-    
-    // Create book with image URL
     await _svc.createBook({
       'title': title,
       'author': author,
       'condition': condition,
       'swapFor': swapFor,
-      'imageUrl': imageUrl,
+      'imageBase64': imageBase64 ?? '',
       'ownerId': user.uid,
       'ownerEmail': user.email ?? '',
       'status': '',
@@ -106,25 +94,14 @@ class BookProvider with ChangeNotifier {
     required String author,
     required String condition,
     required String swapFor,
-    XFile? image,
-    String? currentImageUrl,
+    String? imageBase64,
   }) async {
-    String imageUrl = currentImageUrl ?? '';
-    
-    if (image != null) {
-      try {
-        imageUrl = await _svc.uploadImage(image, _auth.currentUser!.uid);
-      } catch (e) {
-        // Keep current image URL if new upload fails
-      }
-    }
-    
     await _svc.updateBook(id, {
       'title': title,
       'author': author,
       'condition': condition,
       'swapFor': swapFor,
-      'imageUrl': imageUrl,
+      'imageBase64': imageBase64 ?? '',
     });
   }
 

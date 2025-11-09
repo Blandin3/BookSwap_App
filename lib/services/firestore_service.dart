@@ -18,10 +18,9 @@ class FirestoreService {
   Stream<QuerySnapshot<Map<String, dynamic>>> booksByOwner(String ownerId) =>
       _db.collection('books').where('ownerId', isEqualTo: ownerId).snapshots();
 
-  Future<String> uploadImage(XFile file, String ownerId) async {
+  Future<String> processImageToBase64(XFile file) async {
     final bytes = await file.readAsBytes();
-    final base64String = base64Encode(bytes);
-    return 'data:image/jpeg;base64,$base64String';
+    return base64Encode(bytes);
   }
 
   Future<String> createBook(Map<String, dynamic> data) async {

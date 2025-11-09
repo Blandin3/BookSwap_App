@@ -18,56 +18,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final auth = context.read<AuthService>();
     final user = auth.currentUser!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile & Settings')),
+      appBar: AppBar(
+        title: const Text('Profile & Settings'),
+        actions: [
+          PopupMenuButton<String>(
+            icon: CircleAvatar(
+              radius: 16,
+              backgroundColor: const Color(0xFF42A5F5),
+              child: Text(
+                user.email?.substring(0, 1).toUpperCase() ?? 'U',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            onSelected: (value) {
+              if (value == 'email') {
+                _showEmailDialog(context, user.email ?? 'No email');
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'email',
+                child: Row(
+                  children: [
+                    const Icon(Icons.email, color: Color(0xFF42A5F5)),
+                    const SizedBox(width: 8),
+                    Text(user.email ?? 'No email'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Color(0xFFFFC107),
-                    child: Icon(Icons.person, size: 40, color: Colors.black),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    user.email ?? 'No email',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Member since ${DateTime.now().year}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
             // Preferences Section
             const Text(
               'Preferences',
@@ -98,6 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Push Notifications'),
                     subtitle: const Text('Get notified of new swap requests'),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    activeColor: const Color(0xFF42A5F5), // Sky Blue
                   ),
                   Divider(height: 1, color: Colors.grey[200]),
                   SwitchListTile(
@@ -106,6 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Email Updates'),
                     subtitle: const Text('Receive swap updates via email'),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    activeColor: const Color(0xFF42A5F5), // Sky Blue
                   ),
                 ],
               ),
@@ -175,7 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ElevatedButton(
                 onPressed: () => auth.signOut(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: const Color(0xFF607D8B), // Blue Grey for logout
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -195,6 +187,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showEmailDialog(BuildContext context, String email) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: Color(0xFF42A5F5),
+              child: Icon(Icons.person, color: Colors.white, size: 24),
+            ),
+            SizedBox(width: 12),
+            Text('User Profile'),
+          ],
+        ),
+        content: Container(
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildProfileItem('Email Address', email, Icons.email),
+              const SizedBox(height: 16),
+              _buildProfileItem('Member Since', '${DateTime.now().year}', Icons.calendar_today),
+              const SizedBox(height: 16),
+              _buildProfileItem('Account Status', 'Active', Icons.check_circle, 
+                valueColor: const Color(0xFF26A69A)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xFF42A5F5)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileItem(String label, String value, IconData icon, {Color? valueColor}) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE3F2FD),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF42A5F5), size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: valueColor ?? Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

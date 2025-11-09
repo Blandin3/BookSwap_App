@@ -18,14 +18,29 @@ class FirestoreService {
   Stream<QuerySnapshot<Map<String, dynamic>>> booksByOwner(String ownerId) =>
       _db.collection('books').where('ownerId', isEqualTo: ownerId).snapshots();
 
-  Future<String> processImageToBase64(XFile file) async {
-    final bytes = await file.readAsBytes();
-    return base64Encode(bytes);
+  Future<String> uploadImageToStorage(XFile file, String ownerId) async {
+    try {
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.name}';
+      final ref = _storage.ref().child('book_covers/$ownerId/$fileName');
+      
+      final bytes = await file.readAsBytes();
+      await ref.putData(bytes);
+      
+      return await ref.getDownloadURL();
+    } catch (e) {
+      throw Exception('Failed to upload image: $e');
+    }
   }
 
   Future<String> createBook(Map<String, dynamic> data) async {
+    final ref = _db.collection('books').doc(); // Generate ID first
+    data['bookId'] = ref.id; // Set bookId to document ID
     data['createdAt'] = FieldValue.serverTimestamp();
-    final ref = await _db.collection('books').add(data);
+    data['isAvailable'] = true; // Default to available
+    if (data['status'] == null || data['status'] == '') {
+      data['status'] = 'Available'; // Default status
+    }
+    await ref.set(data);
     return ref.id;
   }
 
@@ -54,7 +69,10 @@ class FirestoreService {
       'createdAt': FieldValue.serverTimestamp(),
     });
     print('Updating book status to Pending for book: $bookId');
-    await _db.collection('books').doc(bookId).update({'status': 'Pending'});
+    await _db.collection('books').doc(bookId).update({
+      'status': 'Pending',
+      'isAvailable': false, // Book becomes unavailable during swap process
+    });
     print('Book status updated successfully');
     return ref.id;
   }
@@ -72,7 +90,10 @@ class FirestoreService {
       'status': 'Accepted',
       'updatedAt': FieldValue.serverTimestamp(),
     });
-    batch.update(_db.collection('books').doc(bookId), {'status': 'Accepted'});
+    batch.update(_db.collection('books').doc(bookId), {
+      'status': 'Accepted',
+      'isAvailable': false, // Book no longer available
+    });
     await batch.commit();
   }
 
@@ -82,7 +103,10 @@ class FirestoreService {
       'status': 'Rejected',
       'updatedAt': FieldValue.serverTimestamp(),
     });
-    batch.update(_db.collection('books').doc(bookId), {'status': ''});
+    batch.update(_db.collection('books').doc(bookId), {
+      'status': 'Available',
+      'isAvailable': true, // Book becomes available again
+    });
     await batch.commit();
   }
 
@@ -92,7 +116,10 @@ class FirestoreService {
       'status': 'Completed',
       'completedAt': FieldValue.serverTimestamp(),
     });
-    batch.update(_db.collection('books').doc(bookId), {'status': 'Completed'});
+    batch.update(_db.collection('books').doc(bookId), {
+      'status': 'Swapped',
+      'isAvailable': false, // Book is no longer available
+    });
     await batch.commit();
   }
 

@@ -38,8 +38,8 @@ class BookCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: book.imageBase64.isNotEmpty
-                    ? _buildImage(book.imageBase64)
+                child: book.coverImageUrl.isNotEmpty
+                    ? _buildImage(book.coverImageUrl)
                     : Container(
                         width: 80,
                         height: 120,
@@ -110,30 +110,48 @@ class BookCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (book.status.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      'Status: ${book.status}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.orange[600],
-                        fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: book.isAvailable ? const Color(0xFF26A69A) : const Color(0xFF607D8B),
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      Text(
+                        book.status,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: book.isAvailable ? const Color(0xFF26A69A) : const Color(0xFF607D8B),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
             // Action Button
             if (ownerActions != null)
-              ownerActions!
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ownerActions!,
+                ],
+              )
             else if (onSwap != null)
               ElevatedButton(
-                onPressed: book.status.isEmpty ? onSwap : null,
+                onPressed: book.isAvailable ? onSwap : null,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  backgroundColor: book.isAvailable ? const Color(0xFF42A5F5) : const Color(0xFF607D8B),
+                  foregroundColor: Colors.white,
                 ),
-                child: Text(book.status.isEmpty ? 'Swap' : book.status),
+                child: Text(book.isAvailable ? 'Request Swap' : book.status),
               ),
           ],
         ),
@@ -141,18 +159,25 @@ class BookCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(String imageBase64) {
-    try {
-      final bytes = base64Decode(imageBase64);
-      return Image.memory(
-        bytes,
-        width: 80,
-        height: 120,
-        fit: BoxFit.cover,
-      );
-    } catch (e) {
-      return _buildPlaceholder();
-    }
+  Widget _buildImage(String imageUrl) {
+    return Image.network(
+      imageUrl,
+      width: 80,
+      height: 120,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          width: 80,
+          height: 120,
+          color: Colors.grey[200],
+          child: const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+    );
   }
 
   Widget _buildPlaceholder() {
@@ -163,7 +188,7 @@ class BookCard extends StatelessWidget {
       child: const Icon(
         Icons.menu_book,
         size: 40,
-        color: Colors.amber,
+        color: Color(0xFF42A5F5), // Sky Blue
       ),
     );
   }
@@ -171,13 +196,13 @@ class BookCard extends StatelessWidget {
   Color _getConditionColor(String condition) {
     switch (condition.toLowerCase()) {
       case 'new':
-        return Colors.green;
+        return const Color(0xFF26A69A); // Muted Teal
       case 'like new':
-        return Colors.blue;
+        return const Color(0xFF42A5F5); // Sky Blue
       case 'good':
-        return Colors.orange;
+        return const Color(0xFF1A237E); // Navy
       case 'used':
-        return Colors.red;
+        return const Color(0xFF607D8B); // Blue Grey
       default:
         return Colors.grey;
     }

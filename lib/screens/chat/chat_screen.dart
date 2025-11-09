@@ -140,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(width: 12),
             Container(
               decoration: const BoxDecoration(
-                color: Color(0xFFFFC107),
+                color: Color(0xFF42A5F5), // Sky Blue
                 shape: BoxShape.circle,
               ),
               child: IconButton(
@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     }
                   }
                 },
-                icon: const Icon(Icons.send_rounded, color: Colors.black, size: 20),
+                icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
               ),
             ),
           ],
@@ -180,7 +180,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (!isMine) ...[
             const CircleAvatar(
               radius: 14,
-              backgroundColor: Color(0xFF0A0A23),
+              backgroundColor: Color(0xFF1A237E), // Navy
               child: Icon(Icons.person, size: 14, color: Colors.white),
             ),
             const SizedBox(width: 8),
@@ -192,7 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isMine ? const Color(0xFFFFC107) : Colors.white,
+                    color: isMine ? const Color(0xFF42A5F5) : Colors.white, // Sky Blue for my messages
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
@@ -210,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Text(
                     message['text'] ?? '',
                     style: TextStyle(
-                      color: isMine ? Colors.black : const Color(0xFF333333),
+                      color: isMine ? Colors.white : const Color(0xFF333333),
                       fontSize: 15,
                       height: 1.3,
                     ),
@@ -234,8 +234,8 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(width: 8),
             const CircleAvatar(
               radius: 14,
-              backgroundColor: Color(0xFFFFC107),
-              child: Icon(Icons.person, size: 14, color: Colors.black),
+              backgroundColor: Color(0xFF42A5F5), // Sky Blue
+              child: Icon(Icons.person, size: 14, color: Colors.white),
             ),
           ],
         ],

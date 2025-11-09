@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestore_service.dart';
+import '../models/swap.dart';
 
 class NotificationProvider with ChangeNotifier {
   final _svc = FirestoreService.instance;
@@ -46,7 +47,7 @@ class NotificationProvider with ChangeNotifier {
       notifyListeners();
     });
     
-    // Listen to my offers status changes
+    // Listen to my offers status changes (accepted swaps need attention)
     _myOffersSub = _svc.myOffers(uid).listen((snapshot) {
       _unreadMyOffers = snapshot.docs
           .where((doc) => doc.data()['status'] == 'Accepted')

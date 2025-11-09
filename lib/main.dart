@@ -7,6 +7,7 @@ import 'services/auth_service.dart';
 import 'providers/book_provider.dart';
 import 'providers/chat_provider.dart';
 import 'providers/notification_provider.dart';
+import 'providers/swap_provider.dart';
 import 'widgets/notification_badge.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/signup_screen.dart';
@@ -28,8 +29,11 @@ Future<void> main() async {
 class BookSwapApp extends StatelessWidget {
   const BookSwapApp({super.key});
 
-  static const _navy = Color(0xFF0A0A23);
-  static const _amber = Color(0xFFFFC107);
+  // Blue Color Scheme
+  static const _navy = Color(0xFF1A237E);        // Deep Navy
+  static const _skyBlue = Color(0xFF42A5F5);     // Sky Blue  
+  static const _mutedTeal = Color(0xFF26A69A);   // Muted Teal
+  static const _lightBlue = Color(0xFFE3F2FD);   // Light Blue Background
 
   @override
   Widget build(BuildContext context) {
@@ -39,28 +43,51 @@ class BookSwapApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BookProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => SwapProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'BookSwap',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: _amber, primary: _amber),
-          scaffoldBackgroundColor: Colors.white,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: _skyBlue,
+            primary: _skyBlue,
+            secondary: _mutedTeal,
+            surface: _lightBlue,
+          ),
+          scaffoldBackgroundColor: _lightBlue,
           appBarTheme: const AppBarTheme(
             backgroundColor: _navy,
             foregroundColor: Colors.white,
-            elevation: 0,
+            elevation: 2,
+            shadowColor: Colors.black26,
           ),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             backgroundColor: _navy,
-            selectedItemColor: _amber,
-            unselectedItemColor: Colors.white70,
+            selectedItemColor: _skyBlue,
+            unselectedItemColor: Colors.white60,
+            type: BottomNavigationBarType.fixed,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(backgroundColor: _amber, foregroundColor: Colors.black),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _skyBlue,
+              foregroundColor: Colors.white,
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
           ),
+
           inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: _skyBlue.withOpacity(0.3)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: _skyBlue, width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.white,
           ),
         ),
         home: const _AuthGate(),

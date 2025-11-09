@@ -62,43 +62,97 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1A237E), // Navy
+              Color(0xFF42A5F5), // Sky Blue
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16),
+                ),
+                obscureText: true,
+              ),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _confirmPasswordController,
-              decoration: const InputDecoration(labelText: 'Confirm Password'),
-              obscureText: true,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextField(
+                controller: _confirmPasswordController,
+                decoration: const InputDecoration(
+                  labelText: 'Confirm Password',
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16),
+                ),
+                obscureText: true,
+              ),
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _loading ? null : _signup,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF26A69A), // Muted Teal
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 child: _loading
-                    ? const CircularProgressIndicator()
-                    : const Text('Sign Up'),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Sign Up', style: TextStyle(fontSize: 16)),
               ),
             ),
+            const SizedBox(height: 16),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Already have an account? Login'),
+              child: const Text(
+                'Already have an account? Login',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -71,20 +71,33 @@ class BookProvider with ChangeNotifier {
     required String author,
     required String condition,
     required String swapFor,
-    String? imageBase64,
+    XFile? image,
   }) async {
     final user = _auth.currentUser;
     if (user == null) throw Exception('User not logged in');
+    
+    String coverImageUrl = '';
+    
+    // Upload image to Firebase Storage if provided
+    if (image != null) {
+      try {
+        coverImageUrl = await _svc.uploadImageToStorage(image, user.uid);
+      } catch (e) {
+        // Continue without image if upload fails
+        print('Image upload failed: $e');
+      }
+    }
     
     await _svc.createBook({
       'title': title,
       'author': author,
       'condition': condition,
       'swapFor': swapFor,
-      'imageBase64': imageBase64 ?? '',
+      'coverImageUrl': coverImageUrl,
       'ownerId': user.uid,
       'ownerEmail': user.email ?? '',
-      'status': '',
+      'status': 'Available',
+      'isAvailable': true,
     });
   }
 
@@ -94,14 +107,27 @@ class BookProvider with ChangeNotifier {
     required String author,
     required String condition,
     required String swapFor,
-    String? imageBase64,
+    XFile? image,
+    String? currentImageUrl,
   }) async {
+    String coverImageUrl = currentImageUrl ?? '';
+    
+    // Upload new image if provided
+    if (image != null) {
+      try {
+        coverImageUrl = await _svc.uploadImageToStorage(image, _auth.currentUser!.uid);
+      } catch (e) {
+        // Keep current image if new upload fails
+        print('Image upload failed: $e');
+      }
+    }
+    
     await _svc.updateBook(id, {
       'title': title,
       'author': author,
       'condition': condition,
       'swapFor': swapFor,
-      'imageBase64': imageBase64 ?? '',
+      'coverImageUrl': coverImageUrl,
     });
   }
 

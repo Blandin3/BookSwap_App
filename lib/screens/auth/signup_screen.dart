@@ -64,14 +64,7 @@ class _SignupScreenState extends State<SignupScreen> {
       appBar: AppBar(title: const Text('Sign Up')),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A237E), // Navy
-              Color(0xFF42A5F5), // Sky Blue
-            ],
-          ),
+          color: Color(0xFF0A0A23), // Original Navy
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -131,15 +124,15 @@ class _SignupScreenState extends State<SignupScreen> {
               child: ElevatedButton(
                 onPressed: _loading ? null : _signup,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF26A69A), // Muted Teal
-                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFFFFC107), // Amber
+                  foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: _loading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const CircularProgressIndicator(color: Colors.black)
                     : const Text('Sign Up', style: TextStyle(fontSize: 16)),
               ),
             ),

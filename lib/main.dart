@@ -11,6 +11,7 @@ import 'providers/swap_provider.dart';
 import 'widgets/notification_badge.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/signup_screen.dart';
+import 'screens/auth/verify_email_screen.dart';
 
 import 'screens/home/browse_listings.dart';
 import 'screens/home/my_listings.dart';
@@ -87,7 +88,8 @@ class _AuthGate extends StatelessWidget {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
         if (!snapshot.hasData) return const LoginScreen();
-        // Temporarily skip email verification
+        final user = auth.currentUser!;
+        if (!user.emailVerified) return const VerifyEmailScreen();
         return const MainNav();
       },
     );

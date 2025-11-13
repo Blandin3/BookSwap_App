@@ -20,7 +20,7 @@ import 'screens/settings/settings_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+   options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const BookSwapApp());
 }
@@ -28,11 +28,8 @@ Future<void> main() async {
 class BookSwapApp extends StatelessWidget {
   const BookSwapApp({super.key});
 
-  // Blue Color Scheme
-  static const _navy = Color(0xFF1A237E);        // Deep Navy
-  static const _skyBlue = Color(0xFF42A5F5);     // Sky Blue  
-  static const _mutedTeal = Color(0xFF26A69A);   // Muted Teal
-  static const _lightBlue = Color(0xFFE3F2FD);   // Light Blue Background
+  static const _navy = Color(0xFF0A0A23);
+  static const _amber = Color(0xFFFFC107);
 
   @override
   Widget build(BuildContext context) {
@@ -48,45 +45,23 @@ class BookSwapApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'BookSwap',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: _skyBlue,
-            primary: _skyBlue,
-            secondary: _mutedTeal,
-            surface: _lightBlue,
-          ),
-          scaffoldBackgroundColor: _lightBlue,
+          colorScheme: ColorScheme.fromSeed(seedColor: _amber, primary: _amber),
+          scaffoldBackgroundColor: Colors.white,
           appBarTheme: const AppBarTheme(
             backgroundColor: _navy,
             foregroundColor: Colors.white,
-            elevation: 2,
-            shadowColor: Colors.black26,
+            elevation: 0,
           ),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             backgroundColor: _navy,
-            selectedItemColor: _skyBlue,
-            unselectedItemColor: Colors.white60,
-            type: BottomNavigationBarType.fixed,
+            selectedItemColor: _amber,
+            unselectedItemColor: Colors.white70,
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _skyBlue,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: _amber, foregroundColor: Colors.black),
           ),
-
           inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _skyBlue.withValues(alpha: 0.3)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: _skyBlue, width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.white,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
         home: const _AuthGate(),

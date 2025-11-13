@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
 import '../services/firestore_service.dart';
 import '../models/book.dart';
 
@@ -71,29 +70,17 @@ class BookProvider with ChangeNotifier {
     required String author,
     required String condition,
     required String swapFor,
-    XFile? image,
+    String? imageBase64,
   }) async {
     final user = _auth.currentUser;
     if (user == null) throw Exception('User not logged in');
-    
-    String coverImageUrl = '';
-    
-    // Upload image to Firebase Storage if provided
-    if (image != null) {
-      try {
-        coverImageUrl = await _svc.uploadImageToStorage(image, user.uid);
-      } catch (e) {
-        // Continue without image if upload fails
-        debugPrint('Image upload failed: $e');
-      }
-    }
     
     await _svc.createBook({
       'title': title,
       'author': author,
       'condition': condition,
       'swapFor': swapFor,
-      'coverImageUrl': coverImageUrl,
+      'coverImageUrl': imageBase64 ?? '', // Store base64 in coverImageUrl field
       'ownerId': user.uid,
       'ownerEmail': user.email ?? '',
       'status': 'Available',
@@ -107,27 +94,14 @@ class BookProvider with ChangeNotifier {
     required String author,
     required String condition,
     required String swapFor,
-    XFile? image,
-    String? currentImageUrl,
+    String? imageBase64,
   }) async {
-    String coverImageUrl = currentImageUrl ?? '';
-    
-    // Upload new image if provided
-    if (image != null) {
-      try {
-        coverImageUrl = await _svc.uploadImageToStorage(image, _auth.currentUser!.uid);
-      } catch (e) {
-        // Keep current image if new upload fails
-        debugPrint('Image upload failed: $e');
-      }
-    }
-    
     await _svc.updateBook(id, {
       'title': title,
       'author': author,
       'condition': condition,
       'swapFor': swapFor,
-      'coverImageUrl': coverImageUrl,
+      'coverImageUrl': imageBase64 ?? '', // Store base64 in coverImageUrl field
     });
   }
 

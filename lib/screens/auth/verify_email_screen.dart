@@ -33,17 +33,20 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   Future<void> _checkEmailVerified() async {
     setState(() => _isLoading = true);
+    final authService = context.read<AuthService>();
+    final messenger = ScaffoldMessenger.of(context);
+    
     try {
       // Force reload the user from Firebase
-      await context.read<AuthService>().reloadUser();
+      await authService.reloadUser();
       
       // Get the updated user
-      final user = context.read<AuthService>().currentUser;
+      final user = authService.currentUser;
       
       if (user?.emailVerified == true) {
         // Email is verified - show success and let StreamBuilder handle navigation
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(
               content: Text('Email verified successfully! Welcome to BookSwap!'),
               backgroundColor: Colors.green,
@@ -53,7 +56,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         // The StreamBuilder in main.dart will automatically navigate to MainNav
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             const SnackBar(
               content: Text('Email not verified yet. Please check your inbox and click the verification link.'),
               backgroundColor: Colors.orange,
@@ -73,18 +76,21 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Future<void> _checkEmailVerifiedSilently() async {
+    final authService = context.read<AuthService>();
+    
     try {
       // Force reload the user from Firebase
-      await context.read<AuthService>().reloadUser();
+      await authService.reloadUser();
       
       // Get the updated user
-      final user = context.read<AuthService>().currentUser;
+      final user = authService.currentUser;
       
       if (user?.emailVerified == true) {
         // Email is verified - cancel timer and let StreamBuilder handle navigation
         _timer?.cancel();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          final messenger = ScaffoldMessenger.of(context);
+          messenger.showSnackBar(
             const SnackBar(
               content: Text('Email verified! Redirecting...'),
               backgroundColor: Colors.green,

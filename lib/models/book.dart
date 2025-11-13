@@ -38,7 +38,7 @@ class Book {
       author: d['author'] ?? '',
       condition: d['condition'] ?? 'New',
       swapFor: d['swapFor'] ?? '',
-      coverImageUrl: d['coverImageUrl'] ?? d['imageBase64'] ?? '', // Support both old and new
+      coverImageUrl: d['coverImageUrl'] ?? d['imageBase64'] ?? d['imageUrl'] ?? '', // Support all formats
       ownerId: d['ownerId'] ?? '',
       ownerEmail: d['ownerEmail'] ?? '',
       status: d['status'] ?? 'Available', // Default to Available

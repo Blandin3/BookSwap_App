@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A237E), // Navy background
+      backgroundColor: const Color(0xFF0A0A23),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Icon(
                   Icons.menu_book_rounded,
                   size: 50,
-                  color: Color(0xFF42A5F5), // Sky Blue
+                  color: Color(0xFFFFC107),
                 ),
               ),
               const SizedBox(height: 32),
@@ -166,8 +166,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _login,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF42A5F5), // Sky Blue
-                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFFFFC107),
+                    foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextSpan(
                         text: 'Sign up',
                         style: TextStyle(
-                          color: Color(0xFF42A5F5), // Sky Blue
+                          color: Color(0xFFFFC107),
                           fontWeight: FontWeight.w600,
                         ),
                       ),

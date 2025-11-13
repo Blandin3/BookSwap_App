@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:provider/provider.dart';
 import '../../providers/book_provider.dart';
 import '../../models/book.dart';
@@ -21,7 +23,8 @@ class _PostBookScreenState extends State<PostBookScreen> {
   final _swapFor = TextEditingController();
   String _condition = 'New';
   bool _loading = false;
-  XFile? _image;
+  bool _isUploading = false;
+  String _imageBase64 = '';
 
   @override
   void initState() {
@@ -32,25 +35,48 @@ class _PostBookScreenState extends State<PostBookScreen> {
       _author.text = b.author;
       _swapFor.text = b.swapFor;
       _condition = b.condition;
+      _imageBase64 = b.coverImageUrl; // Use existing image
     }
   }
 
   Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+
+    setState(() => _isUploading = true);
+
     try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 800,
-        maxHeight: 800,
-        imageQuality: 70,
-      );
-      if (picked != null) {
-        setState(() => _image = picked);
+      String base64Image;
+
+      if (kIsWeb) {
+        // Web: Read directly
+        final bytes = await picked.readAsBytes();
+        base64Image = base64Encode(bytes);
+      } else {
+        // Mobile: Compress before encoding
+        final file = File(picked.path);
+        final compressed = await FlutterImageCompress.compressAndGetFile(
+          file.path,
+          '${file.path}_compressed.jpg',
+          quality: 70,
+          minWidth: 800,
+          minHeight: 800,
+        );
+        base64Image = base64Encode(await compressed!.readAsBytes());
       }
+
+      setState(() {
+        _imageBase64 = base64Image;
+        _isUploading = false;
+      });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Image upload failed')),
+        );
+        setState(() => _isUploading = false);
+      }
     }
   }
 
@@ -85,49 +111,23 @@ class _PostBookScreenState extends State<PostBookScreen> {
             const SizedBox(height: 16),
             // Image picker
             GestureDetector(
-              onTap: _pickImage,
+              onTap: _isUploading ? null : _pickImage,
               child: Container(
                 height: 160,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade400),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: _image != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: kIsWeb
-                            ? FutureBuilder<Uint8List>(
-                                future: _image!.readAsBytes(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    return Image.memory(
-                                      snapshot.data!,
-                                      height: 160,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    );
-                                  }
-                                  return const Center(child: CircularProgressIndicator());
-                                },
-                              )
-                            : Image.file(
-                                File(_image!.path),
-                                height: 160,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                      )
-                    : (widget.editing?.coverImageUrl.isNotEmpty == true)
+                child: _isUploading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _imageBase64.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              widget.editing!.coverImageUrl,
+                            child: Image.memory(
+                              base64Decode(_imageBase64),
                               height: 160,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Center(
-                                child: Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                              ),
                             ),
                           )
                         : const Center(
@@ -147,6 +147,9 @@ class _PostBookScreenState extends State<PostBookScreen> {
               onPressed: _loading ? null : () async {
                 if (!_form.currentState!.validate()) return;
                 setState(() => _loading = true);
+                final messenger = ScaffoldMessenger.of(context);
+                final navigator = Navigator.of(context);
+                
                 try {
                   if (editing == null) {
                     await prov.create(
@@ -154,7 +157,7 @@ class _PostBookScreenState extends State<PostBookScreen> {
                       author: _author.text.trim(),
                       condition: _condition,
                       swapFor: _swapFor.text.trim(),
-                      image: _image,
+                      imageBase64: _imageBase64,
                     );
                   } else {
                     await prov.update(
@@ -163,24 +166,25 @@ class _PostBookScreenState extends State<PostBookScreen> {
                       author: _author.text.trim(),
                       condition: _condition,
                       swapFor: _swapFor.text.trim(),
-                      image: _image,
-                      currentImageUrl: editing.coverImageUrl,
+                      imageBase64: _imageBase64,
                     );
                   }
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(content: Text('Book ${editing == null ? 'posted' : 'updated'} successfully!')),
                     );
-                    Navigator.pop(context);
+                    navigator.pop();
                   }
                 } catch (e) {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(content: Text('Error: $e')),
                     );
                   }
                 } finally {
-                  if (mounted) setState(() => _loading = false);
+                  if (mounted) {
+                    setState(() => _loading = false);
+                  }
                 }
               },
               child: _loading 
@@ -193,7 +197,7 @@ class _PostBookScreenState extends State<PostBookScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         ),
                         const SizedBox(width: 8),
-                        Text(_image != null ? 'Uploading image...' : 'Saving...'),
+                        Text(_isUploading ? 'Processing image...' : 'Saving...'),
                       ],
                     )
                   : Text(editing == null ? 'Post Book' : 'Save Changes'),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/book.dart';
@@ -174,25 +175,29 @@ class BookCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(String imageUrl) {
-    return Image.network(
-      imageUrl,
-      width: 80,
-      height: 120,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
+  Widget _buildImage(String imageData) {
+    try {
+      // Try to decode as base64
+      final bytes = base64Decode(imageData);
+      return Image.memory(
+        bytes,
+        width: 80,
+        height: 120,
+        fit: BoxFit.cover,
+      );
+    } catch (e) {
+      // If base64 decode fails, try as network image (fallback)
+      if (imageData.startsWith('http')) {
+        return Image.network(
+          imageData,
           width: 80,
           height: 120,
-          color: Colors.grey[200],
-          child: const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
         );
-      },
-      errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-    );
+      }
+      return _buildPlaceholder();
+    }
   }
 
   Widget _buildPlaceholder() {
@@ -203,7 +208,7 @@ class BookCard extends StatelessWidget {
       child: const Icon(
         Icons.menu_book,
         size: 40,
-        color: Color(0xFF42A5F5), // Sky Blue
+        color: Colors.amber,
       ),
     );
   }
